@@ -155,3 +155,4 @@ def download_mazes(directory: str | Path, category: str = "classic",
 
     return downloaded
 # Improved error handling for malformed maze files
+# Improved error handling for malformed maze files
