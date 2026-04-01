@@ -159,3 +159,4 @@ python -m pytest tests/ -v
 MIT License - see [LICENSE](LICENSE).
 Performance metrics updated.
 
+Performance metrics updated.
