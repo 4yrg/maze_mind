@@ -45,6 +45,10 @@ class BaseAgent(ABC):
         self.q_table = np.zeros((self.n_states, self.n_actions))
         self.epsilon = 1.0
 
+    def start_episode(self):
+        """Hook called by orchestrator at the start of each episode."""
+        pass
+
     @abstractmethod
     def update(
         self,
