@@ -8,8 +8,8 @@ Mazemind implements two tabular RL algorithms that navigate a 16x16 Micromouse m
 
 | Algorithm | Type | Update Rule | Key Difference |
 |-----------|------|-------------|----------------|
-| **Dyna-Q** | Model-based / Off-policy | `Q(s,a) += α[r + γ·max Q(s',a') - Q(s,a)]` + N planning steps from internal model | Builds a world model and simulates extra experiences |
-| **SARSA** | Model-free / On-policy | `Q(s,a) += α[r + γ·Q(s',a') - Q(s,a)]` | Uses the actual next action chosen by the policy |
+| **Dyna-Q** (Prioritized Sweeping) | Model-based / Off-policy | Pushed to structural `heapq` queue where $P = \|R + \gamma \max Q - Q\| > \theta$. Iteratively maps gradients dynamically backward. | Builds a world model and processes targeted paths backwards starting from highest Bellman error cells. |
+| **SARSA(λ)** | Model-free / On-policy | Tracks Eligibility Traces: $E(s,a) = 1$, scaling full update maps $Q += \alpha \cdot TD \cdot E$. | Exponentially backwards propagates scalar values across all episodic traces utilizing lambda parameter. |
 
 ## Quick Start
 
@@ -142,7 +142,9 @@ mazemind/
 | Discount Factor (γ) | 0.99 | Weight for future rewards |
 | Initial Epsilon | 1.0 | Starting exploration rate |
 | Epsilon Decay | 0.995 | Multiplicative decay per episode |
-| Planning Steps (Dyna-Q) | 10 | Simulated experiences per real step |
+| Planning Steps (Dyna-Q) | 10 | Simulated prioritized experiences per real step |
+| Theta (θ) (Dyna-Q) | 1e-4 | Bellman error threshold for queue insertion |
+| Trace Decay (λ) (SARSA) | 0.9 | Decay rate for episodic memory paths |
 | Episodes | 500 | Training episodes |
 | Max Steps | 1000 | Steps per episode timeout |
 

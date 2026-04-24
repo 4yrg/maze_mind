@@ -1,4 +1,15 @@
-"""SARSA agent: model-free on-policy temporal difference learning."""
+"""SARSA agent: model-free on-policy temporal difference learning with Eligibility Traces (SARSA(λ)).
+
+Optimization Algorithm Details:
+-------------------------------
+This implementation leverages **SARSA(λ) with Replacing Eligibility Traces**. 
+
+Without traces (standard SARSA), reward discovery updates only the immediate contiguous cell, scaling inefficiently in delayed-reward setups like large mazes (O(Episodes)). 
+Introduction of a tracing mechanism provides the agent with episodic memory:
+1. Every time a state-action is visited, its trace is set to 1.0 (Replacing Trace methodology, mitigating unbounded trace summation in grid worlds).
+2. Upon computing the Temporal Difference (TD) error from a step transition, the algorithm iteratively updates *all* historically logged paths.
+3. Once updated, the trajectory histories explicitly mathematically decay proportional to the parameter \`lambda (lam)\` combined with the standard discount factor \`gamma\`.
+"""
 
 from __future__ import annotations
 
@@ -15,8 +26,19 @@ class SarsaAgent(BaseAgent):
         epsilon: float = 1.0,
         epsilon_min: float = 0.01,
         epsilon_decay: float = 0.995,
+        lam: float = 0.9,
     ):
         super().__init__(n_states, n_actions, epsilon, epsilon_min, epsilon_decay)
+        self.lam = lam
+        self.e_trace = np.zeros((n_states, n_actions))
+
+    def start_episode(self):
+        """Hook called by orchestrator at the start of each episode."""
+        self.e_trace.fill(0)
+
+    def reset(self):
+        super().reset()
+        self.e_trace.fill(0)
 
     def update(
         self,
@@ -39,4 +61,14 @@ class SarsaAgent(BaseAgent):
             next_q = self.q_table[next_state_index, next_action]
             target = reward + gamma * next_q
 
-        self.q_table[state_index, action] += alpha * (target - current_q)
+        td_error = target - current_q
+
+        # Replacing traces are better for gridworld to avoid unbounded trace growth
+        self.e_trace[state_index, :] = 0.0
+        self.e_trace[state_index, action] = 1.0
+
+        # Update all Q-values based on their eligibility trace
+        self.q_table += alpha * td_error * self.e_trace
+
+        # Decay eligibility traces
+        self.e_trace *= gamma * self.lam

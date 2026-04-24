@@ -33,6 +33,7 @@ def train_agent(
     metrics = TrainingMetrics(agent_name=agent_name, maze_name=maze_name)
 
     for ep in range(n_episodes):
+        agent.start_episode()
         state = env.reset()
         si = env.state_to_index(state)
         total_reward = 0.0
@@ -96,6 +97,7 @@ def train_agent_generator(
     metrics = TrainingMetrics(agent_name=agent_name, maze_name=maze_name)
 
     for ep in range(n_episodes):
+        agent.start_episode()
         state = env.reset()
         si = env.state_to_index(state)
         total_reward = 0.0
@@ -146,6 +148,7 @@ def extract_optimal_path(
     env: MicromouseEnv,
     max_steps: int = 500,
 ) -> list[tuple[int, int]]:
+    agent.start_episode()
     state = env.reset()
     si = env.state_to_index(state)
     path = [state]
@@ -198,6 +201,7 @@ def train_with_snapshots(
     is_dyna = isinstance(agent, DynaQAgent)
 
     for ep in range(n_episodes):
+        agent.start_episode()
         state = env.reset()
         si = env.state_to_index(state)
         total_reward = 0.0
@@ -282,6 +286,7 @@ def train_both_generator(
         _random.seed(seed)
 
     for ep in range(n_episodes):
+        dq_agent.start_episode()
         dq_state = dq_env.reset()
         dq_si = dq_env.state_to_index(dq_state)
         dq_total_reward = 0.0
@@ -300,6 +305,7 @@ def train_both_generator(
                 break
         dq_agent.decay_epsilon()
 
+        ss_agent.start_episode()
         ss_state = ss_env.reset()
         ss_si = ss_env.state_to_index(ss_state)
         ss_total_reward = 0.0

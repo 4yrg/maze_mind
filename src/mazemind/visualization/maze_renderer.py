@@ -70,10 +70,14 @@ def _draw_walls(ax: Axes, maze: MazeData, U: float):
                             capstyle="butt", zorder=1)
         ax.add_collection(lc)
 
-    for vr in range(2 * n + 1):
-        for vc in range(2 * n + 1):
-            ax.plot(vc * U, vr * U, "s", color=WALL_COLOR,
-                    markersize=lw * 0.9, zorder=2)
+    pts = set()
+    for seg in h_segs + v_segs:
+        pts.add(seg[0])
+        pts.add(seg[1])
+
+    if pts:
+        px, py = zip(*pts)
+        ax.plot(px, py, "s", color=WALL_COLOR, markersize=lw * 0.9, zorder=2)
 
 
 def _cell_center(r, c, n, U):

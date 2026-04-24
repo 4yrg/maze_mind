@@ -85,25 +85,44 @@ reward: float
 
 ## Algorithm Implementations
 
-### Dyna-Q Update
+### Dyna-Q Update (Prioritized Sweeping)
 ```python
-# 1. Direct RL update (off-policy Q-learning)
-q_table[s, a] += alpha * (reward + gamma * max(q_table[s']) - q_table[s, a])
+# 1. Evaluate Direct TD Error
+target = reward + gamma * max(q_table[s'])
+p = abs(target - q_table[s, a])
 
-# 2. Store in model
-model[(s, a)] = (reward, s')
+# 2. Add to Priority Queue
+if p > theta:
+    pq.push((-p, s, a))
 
-# 3. Planning: N simulated updates
+# 3. Store transitions
+model[(s, a)] = (reward, s', done)
+predecessors[s'].add((s, a))
+
+# 4. Planning: N simulated prioritized updates
 for _ in range(n_planning):
-    (sim_s, sim_a), (sim_r, sim_s') = random_sample(model)
+    _, sim_s, sim_a = pq.pop()
+    sim_r, sim_s', sim_done = model[(sim_s, sim_a)]
     q_table[sim_s, sim_a] += alpha * (sim_r + gamma * max(q_table[sim_s']) - q_table[sim_s, sim_a])
+
+    # Propagate backwards
+    for p_s, p_a in predecessors[sim_s]:
+        # Compute predecessor P and push to pq if > theta
+        ...
 ```
 
-### SARSA Update
+### SARSA Update (SARSA(λ))
 ```python
-# On-policy: uses actual next action
-q_table[s, a] += alpha * (reward + gamma * q_table[s', a'] - q_table[s, a])
-# where a' is chosen by ε-greedy policy for state s'
+# 1. Set current trace via Replacing Traces assumption
+e_trace[s, :] = 0.0
+e_trace[s, a] = 1.0
+
+# 2. Global Q-Table update by Eligibility Scalar
+td_error = reward + gamma * q_table[s', a'] - q_table[s, a]
+q_table += alpha * td_error * e_trace
+
+# 3. Global trace decay
+e_trace *= gamma * lambda_param
 ```
 
 ## Visualization Pipeline
