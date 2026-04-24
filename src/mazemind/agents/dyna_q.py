@@ -1,4 +1,15 @@
-"""Dyna-Q agent: model-based RL with planning from simulated experiences (Prioritized Sweeping)."""
+"""Dyna-Q agent: model-based RL with planning from simulated experiences (Prioritized Sweeping).
+
+Optimization Algorithm Details:
+-------------------------------
+This agent utilizes the **Prioritized Sweeping** optimization algorithm. 
+
+Standard Dyna-Q relies on indiscriminately extracting simulated experiences out of an ever-growing transition model via uniform random sampling. This evaluates states inherently unassociated with critical value changes (a massive waste of computation).
+Instead of uniform sampling, this codebase has been refactored mathematically:
+1. Dynamic priority assessments track structural Bellman errors (absolute magnitude difference between projected target rewards and the current Q-table estimates).
+2. Any calculated transition yielding a priority above threshold `theta` logs securely to Python's minimized `heapq` queue.
+3. Once an initial transition is updated, traversing back propagates algorithmic updates toward their verified chronological predecessor coordinates dynamically stored in the array logic. Thus, propagating value iterations smartly inward only across known pathways drastically shrinking planning horizons inside complex architectures.
+"""
 
 from __future__ import annotations
 

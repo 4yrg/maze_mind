@@ -1,4 +1,15 @@
-"""SARSA agent: model-free on-policy temporal difference learning."""
+"""SARSA agent: model-free on-policy temporal difference learning with Eligibility Traces (SARSA(λ)).
+
+Optimization Algorithm Details:
+-------------------------------
+This implementation leverages **SARSA(λ) with Replacing Eligibility Traces**. 
+
+Without traces (standard SARSA), reward discovery updates only the immediate contiguous cell, scaling inefficiently in delayed-reward setups like large mazes (O(Episodes)). 
+Introduction of a tracing mechanism provides the agent with episodic memory:
+1. Every time a state-action is visited, its trace is set to 1.0 (Replacing Trace methodology, mitigating unbounded trace summation in grid worlds).
+2. Upon computing the Temporal Difference (TD) error from a step transition, the algorithm iteratively updates *all* historically logged paths.
+3. Once updated, the trajectory histories explicitly mathematically decay proportional to the parameter \`lambda (lam)\` combined with the standard discount factor \`gamma\`.
+"""
 
 from __future__ import annotations
 
