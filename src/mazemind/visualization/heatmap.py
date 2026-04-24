@@ -167,7 +167,7 @@ def render_model_knowledge(
     n = maze.size
     knowledge = np.zeros((n, n))
 
-    for (si, _action), (_reward, _nsi) in model.items():
+    for (si, _action), (_reward, _nsi, _done) in model.items():
         r, c = si // n, si % n
         knowledge[r][c] += 1
 
