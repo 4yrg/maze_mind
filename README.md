@@ -1,15 +1,25 @@
-# Mazemind: Tabular Reinforcement Learning for Micromouse Maze Pathfinding
+# Mazemind: Tabular Reinforcement Learning and Classical Pathfinding for Micromouse
 
-A pedagogical system evaluating **Dyna-Q** (model-based) and **SARSA** (model-free) reinforcement learning algorithms in autonomous robot pathfinding through standardized Micromouse mazes.
+A pedagogical system evaluating **Dyna-Q** (model-based), **SARSA** (model-free), and **Classical Pathfinding** (A*, Dijkstra, BFS) algorithms in autonomous robot pathfinding through standardized Micromouse mazes.
+
+# Team
+
+| Student ID | Name (From List) | Full Name | Algorithm Implemented |
+| :--- | :--- | :--- | :--- |
+| IT22204202 | Wickramasooriya W.T.D. | Dasun Wickramasooriya | Dyna-Q |
+| IT22548900 | Bilal R.A.M. | Bilal Awshid | SARSA |
+| IT22266828 | Dilshan J.M.H. | Hasintha Dilshan | Dyna-Q |
+| IT22580344 | Jayasekara M.P.S.S. | Sudila Jayasekara | SARSA |
 
 ## Overview
 
 Mazemind implements two tabular RL algorithms that navigate a 16x16 Micromouse maze to find the center goal. The system provides real-time visualization of how each agent explores the environment, builds its Q-table, and converges to an optimal policy.
 
-| Algorithm | Type | Update Rule | Key Difference |
+| Algorithm | Type | Update Rule / Strategy | Key Difference |
 |-----------|------|-------------|----------------|
 | **Dyna-Q** (Prioritized Sweeping) | Model-based / Off-policy | Pushed to structural `heapq` queue where $P = \|R + \gamma \max Q - Q\| > \theta$. Iteratively maps gradients dynamically backward. | Builds a world model and processes targeted paths backwards starting from highest Bellman error cells. |
 | **SARSA(λ)** | Model-free / On-policy | Tracks Eligibility Traces: $E(s,a) = 1$, scaling full update maps $Q += \alpha \cdot TD \cdot E$. | Exponentially backwards propagates scalar values across all episodic traces utilizing lambda parameter. |
+| **Classical (A*/Dijkstra/BFS)** | Search-based | Deterministic graph traversal based on cost and heuristics (Manhattan distance). | Provides optimal theoretical baseline for pathfinding completeness and efficiency. |
 
 ## Quick Start
 
@@ -82,7 +92,8 @@ mazemind/
 ├── notebooks/
 │   ├── 01_dyna_q_training.ipynb    # Dyna-Q training with visualizations
 │   ├── 02_sarsa_training.ipynb     # SARSA training with visualizations
-│   └── 03_comparison.ipynb         # Head-to-head comparison
+│   ├── 03_comparison.ipynb         # Head-to-head RL comparison
+│   └── 04_classical_comparison.ipynb # RL vs Classical baseline comparison
 ├── src/mazemind/
 │   ├── envs/
 │   │   ├── maze_parser.py          # Parse ASCII maze files
@@ -90,7 +101,8 @@ mazemind/
 │   ├── agents/
 │   │   ├── base_agent.py           # Abstract agent with ε-greedy
 │   │   ├── dyna_q.py               # Dyna-Q agent (model-based)
-│   │   └── sarsa.py                # SARSA agent (model-free)
+│   │   ├── sarsa.py                # SARSA agent (model-free)
+│   │   └── classical.py            # Classical solvers (A*, Dijkstra, etc.)
 │   ├── training/
 │   │   └── orchestrator.py         # Training loop and snapshots
 │   ├── visualization/
@@ -132,7 +144,8 @@ mazemind/
 |----------|-------------|
 | `01_dyna_q_training.ipynb` | Train Dyna-Q on a random maze: learning curves, optimal path, heatmaps, Q-value map, training process timeline, policy animation |
 | `02_sarsa_training.ipynb` | Train SARSA on a random maze: same visualizations as Dyna-Q |
-| `03_comparison.ipynb` | Head-to-head comparison: overlaid learning curves, convergence bars, radar chart, statistical tests (t-test, Mann-Whitney U), multi-seed evaluation, side-by-side training process |
+| `03_comparison.ipynb` | Head-to-head RL comparison: overlaid learning curves, convergence bars, radar chart, statistical tests (t-test, Mann-Whitney U), multi-seed evaluation |
+| `04_classical_comparison.ipynb` | RL vs Classical comparison: benchmarks RL convergence against A* and Dijkstra optimality, path efficiency analysis, and exploration overhead |
 
 ## Hyperparameters
 
